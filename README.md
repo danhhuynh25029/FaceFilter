@@ -1,2 +1,2 @@
 # FaceFilter
-- [x] thua toan haar cascade
+Haar Cascade
