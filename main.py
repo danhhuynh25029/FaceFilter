@@ -9,14 +9,30 @@ def filterGasMask(frame,x,y,w,h,nx,ny,nw,nh):
         for j in range(mask_w):
             if maskGas[i][j][3] != 0:
                 frame[i+ny][x+j] = maskGas[i][j]
+def filterBeard(frame,x,y,w,h,nx,ny,nw,nh):
+    beard = cv2.imread("images/beard.png",-1)
+    beard_h = 20
+    beard = cv2.resize(beard,(nw,beard_h))
+    for i in range(beard_h):
+        for j in range(nw):
+            if beard[i][j][3] != 0:
+                frame[i+ny+nh-15][nx+j] = beard[i][j]
 def filterMask(frame,x,y,w,h):
-    anonymus = cv2.imread("images/iron.png",-1)
+    anonymus = cv2.imread("images/bread.png",-1)
     anonymus = cv2.resize(anonymus,(w,h))
     for i in range(h):
         for j in range(w):
             if anonymus[i][j][3] != 0:
                 frame[y+i][x+j] = anonymus[i][j]
     #rint(w,y)
+def filterMouthColor(frame,x,y,w,h):
+    color = cv2.imread("images/mouth1.png",-1)
+    color_h = 170
+    color = cv2.resize(color,(w,color_h))
+    for i in range(color_h):
+        for j in range(w):
+            if color[i][j][3] !=  0:
+                frame[y+i-10][x+j] = color[i][j]
 def filterGlass(frame,ex,ey,ew,eh,x,y,w,h):
     glass = cv2.imread("images/sunglasses.png",-1)
     #glass = cv2.cvtColor(glass,cv2.COLOR_BGR2BGRA)
@@ -43,9 +59,9 @@ def detectFace(faceCascade,eyeCascade,frame):
     faces = faceCascade.detectMultiScale(gray,1.3,5)
     for x,y,w,h in faces:
         # filter Heart
-        filterHeart(frame,x,y,w,h)
+        #filterHeart(frame,x,y,w,h)
         # anonymus mask
-        #filterMask(frame,x,y,w,h)
+        filterMask(frame,x,y,w,h)
         # draw rect
         #cv2.rectangle(frame,(x,y),(x+w,y+h),(0,255,0),2)
         r_gray = gray[y:y+h,x:x+w]
@@ -57,14 +73,21 @@ def detectFace(faceCascade,eyeCascade,frame):
             #cv2.circle(r_color,(ex+ew//2,ey+eh//2),20,(0,255,0),2)
             #print(ex,ey,x,y)
             break
+def detectMouth(mouthCascade,frame):
+    gray = cv2.cvtColor(frame,cv2.COLOR_BGR2GRAY)
+    mouths = mouthCascade.detectMultiScale(gray,1.7,11)
+    for x,y,w,h in mouths:
+        filterMouthColor(frame,x,y,w,h)
+        #cv2.rectangle(frame,(x,y),(x+w,y+h),(0,255,0),2)
 def detectNose(faceCascade,noseCascade,frame):
     gray = cv2.cvtColor(frame,cv2.COLOR_BGR2GRAY)
     faces = faceCascade.detectMultiScale(gray,1.3,6)
-    noses = noseCascade.detectMultiScale(gray,1.3,5)
+    noses = noseCascade.detectMultiScale(gray,1.3,6)
     for x,y,w,h in faces:
-        cv2.rectangle(frame,(x,y),(x+w,y+h),(0,255,0),2)
-        #for nx,ny,nw,nh in noses:
+        #cv2.rectangle(frame,(x,y),(x+w,y+h),(0,255,0),2)
+        for nx,ny,nw,nh in noses:
             #filterGasMask(frame,x,y,w,h,nx,ny,nw,nh)
+            filterBeard(frame,x,y,w,h,nx,ny,nw,nh)
             #cv2.rectangle(frame,(nx,ny),(nx+nw,ny+nh),(0,255,0),2)
 def openVideo(cap):
     if cap.isOpened() == False:
@@ -75,6 +98,8 @@ def openVideo(cap):
     eyeCascade = cv2.CascadeClassifier("haarcascade_eye.xml")
     # nose detect
     noseCascade = cv2.CascadeClassifier("haarcascade_mcs_nose.xml")
+    # mouse detect
+    mouthCascade = cv2.CascadeClassifier("haarcascade_mcs_mouth.xml")
     while (cap.isOpened()):
         ret,frame = cap.read()
         if ret == True:
@@ -82,9 +107,11 @@ def openVideo(cap):
             # convert to BGRA
             frame = cv2.cvtColor(frame,cv2.COLOR_BGR2BGRA)
             # face and eye  detect 
-            detectFace(faceCascade,eyeCascade,frame)
+            #detectFace(faceCascade,eyeCascade,frame)
             # nose detect
             #detectNose(faceCascade,noseCascade,frame)
+            # mouth detect
+            detectMouth(mouthCascade,frame)
             # convert to BGR
             frame = cv2.cvtColor(frame,cv2.COLOR_BGRA2BGR)
             cv2.imshow("test",frame)
