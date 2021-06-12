@@ -1,2 +1,0 @@
-# FaceFilter
-Haar Cascade
