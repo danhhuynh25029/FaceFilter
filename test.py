@@ -3,6 +3,7 @@ import cv2
 import tkinter as tk
 from PIL import Image, ImageTk
 from main import *
+from tkinter import ttk
 #load xml
 # face detect
 faceCascade = cv2.CascadeClassifier("xml/haarcascade_frontalface_default.xml")
@@ -18,6 +19,9 @@ window = tk.Tk()  #Makes main window
 window.wm_title("Tiktok fake")
 window.config(background="#FFFFFF")
 window.geometry("600x500")
+# create label
+label1 = tk.Label(window)
+#filter
 def filterHeart():
     global d,f
     d,f = 0,0
@@ -54,6 +58,7 @@ def filterBeard():
 def filterMouthColor():
     global d,f
     d,f = 2,0
+
 # heart filter
 img = cv2.imread("images/heart.png",-1)
 img = cv2.resize(img,(50,20))
@@ -151,28 +156,29 @@ image11 = ImageTk.PhotoImage(image=img11)
 b11 = tk.Button(image=image11,command=filterMouthColor,height=50,width=50,borderwidth=0)
 b11.place(x= 160,y = 230)
 cap = cv2.VideoCapture("test.mp4")
+cap.set(cv2.CAP_PROP_FPS, 60) 
 def show_frame():
     ret, frame = cap.read()
-    if ret == True:
-        frame = cv2.resize(frame,(230,400))
-        frame = cv2.cvtColor(frame,cv2.COLOR_BGR2BGRA)
-        # face and eye  detect
-        if d == 0:
-            detectFace(faceCascade,eyeCascade,frame,f)
-        # nose detect
-        if d == 1:
-            detectNose(faceCascade,noseCascade,frame,f)
-        # mouth detect
-        if d == 2:
-            detectMouth(mouthCascade,frame,f)
-        frame = cv2.cvtColor(frame,cv2.COLOR_BGRA2BGR)
-        cv2image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGBA)
-        img = Image.fromarray(cv2image)
-        image = ImageTk.PhotoImage(image=img)
-        label1 = tk.Label(image=image)
-        label1["text"] = "test"
-        label1.image = image
-        label1.place(x=300, y=20)
-        label1.after(10,show_frame)
+    # if ret == True:
+    frame = cv2.resize(frame,(230,400))
+    frame = cv2.cvtColor(frame,cv2.COLOR_BGR2BGRA)
+    # face and eye  detect
+    if d == 0:
+        detectFace(faceCascade,eyeCascade,frame,f)
+    # nose detect
+    if d == 1:
+        detectNose(faceCascade,noseCascade,frame,f)
+    # mouth detect
+    if d == 2:
+        detectMouth(mouthCascade,frame,f)
+    frame = cv2.cvtColor(frame,cv2.COLOR_BGRA2BGR)
+    cv2image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGBA)
+    img = Image.fromarray(cv2image)
+    image = ImageTk.PhotoImage(image=img)
+    # label1 = tk.Label(image=image)
+    label1.image = image
+    label1.configure(image=image)
+    label1.place(x=300, y=20)
+    label1.after(30,show_frame)
 show_frame()  #Display 2
 window.mainloop()  #Starts GUI
