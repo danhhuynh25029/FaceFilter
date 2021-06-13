@@ -14,17 +14,23 @@ eyeCascade = cv2.CascadeClassifier("xml/haarcascade_eye.xml")
 noseCascade = cv2.CascadeClassifier("xml/haarcascade_mcs_nose.xml")
 # mouth detect
 mouthCascade = cv2.CascadeClassifier("xml/haarcascade_mcs_mouth.xml")
+frame_width = 230
+frame_height = 400
+
+# Define the codec and create VideoWriter object.The output is stored in 'outpy.avi' file.
+out = cv2.VideoWriter('outpy.avi',cv2.VideoWriter_fourcc('M','J','P','G'), 10, (frame_width,frame_height))
 #Set up GUI
 d,f = 1000,1000
 tmp = 0
-count = 0
+count = 1
 def shiftImage(event):
-    if count % 2 == 0:
+    global count 
+    count += 1
+    if count % 2 == 0 and count != 0:
         canvas1.itemconfig(button, image=srecord_image)
 
     else:
         canvas1.itemconfig(button, image=record_image)
-    globals()['count'] += 1
 def Record():
     global tmp
     record.image = srecord_image
@@ -79,21 +85,24 @@ def filterMouthColor():
 # button record
 
 recordImage = cv2.imread("images/record.png",-1)
-recordImage = cv2.resize(recordImage,(30,30))
+recordImage = cv2.resize(recordImage,(50,50))
 cv2Record = cv2.cvtColor(recordImage, cv2.COLOR_BGR2RGBA)
 recordImage = Image.fromarray(cv2Record)
 record_image = ImageTk.PhotoImage(image=recordImage)
 srecordImage = cv2.imread("images/stoprecord.png",-1)
-srecordImage = cv2.resize(srecordImage,(30,30))
+srecordImage = cv2.resize(srecordImage,(50,50))
 scv2Record = cv2.cvtColor(srecordImage, cv2.COLOR_BGR2RGBA)
 srecordImage = Image.fromarray(scv2Record)
 srecord_image = ImageTk.PhotoImage(image=srecordImage)
 #test
-blankImage = ImageTk.PhotoImage(file='images/blankButton.png')
-
-canvas1 = tk.Canvas(window, width=100, height=100)
-button = canvas1.create_image(30, 30, anchor=tk.NW, image=record_image)
-blank = canvas1.create_image(30, 30, anchor=tk.NW, image=blankImage, state=tk.NORMAL)
+blank =  cv2.imread("images/blankButton.png",-1)
+blank = cv2.resize(blank,(50,50))
+cv2blank = cv2.cvtColor(blank,cv2.COLOR_BGR2RGBA)
+blank_img = Image.fromarray(cv2blank)
+blankImage = ImageTk.PhotoImage(image=blank_img)
+canvas1 = tk.Canvas(window, width=50, height=50)
+button = canvas1.create_image(0, 0, anchor=tk.NW, image=record_image)
+blank = canvas1.create_image(0, 0, anchor=tk.NW, image=blankImage, state=tk.NORMAL)
 canvas1.tag_bind(blank, "<Button-1>", shiftImage)
 canvas1.place(x=390,y=460)
 #0----
@@ -213,6 +222,8 @@ def show_frame():
         if d == 2:
             detectMouth(mouthCascade,frame,f)
         frame = cv2.cvtColor(frame,cv2.COLOR_BGRA2BGR)
+        if count % 2 == 0 and count != 0:
+            out.write(frame)
         cv2image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGBA)
         img = Image.fromarray(cv2image)
         image = ImageTk.PhotoImage(image=img)
