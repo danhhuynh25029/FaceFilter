@@ -5,6 +5,7 @@ from PIL import Image, ImageTk
 from main import *
 from tkinter import ttk
 from tkinter_custom_button import TkinterCustomButton as ButtonC
+import datetime
 #load xml
 # face detect
 faceCascade = cv2.CascadeClassifier("xml/haarcascade_frontalface_default.xml")
@@ -18,11 +19,13 @@ frame_width = 230
 frame_height = 400
 
 # Define the codec and create VideoWriter object.The output is stored in 'outpy.avi' file.
-out = cv2.VideoWriter('outpy.avi',cv2.VideoWriter_fourcc('M','J','P','G'), 10, (frame_width,frame_height))
+time = datetime.datetime.now()
+count = 1
+out = cv2.VideoWriter('outpy'+str(time)+str(count)+'.avi',cv2.VideoWriter_fourcc('M','J','P','G'), 10, (frame_width,frame_height))
 #Set up GUI
 d,f = 1000,1000
 tmp = 0
-count = 1
+
 def shiftImage(event):
     global count 
     count += 1
@@ -45,6 +48,8 @@ window.config(background="#2d3436")
 window.geometry("600x550")
 # create label
 label1 = tk.Label(window,borderwidth=0)
+# recored video
+# out = cv2.VideoWriter('outpy'+str(time)+str(count)+'.avi',cv2.VideoWriter_fourcc('M','J','P','G'), 10, (frame_width,frame_height))
 #filter
 def filterHeart():
     global d,f
@@ -206,6 +211,7 @@ b11.place(x=20+ 160,y =25+ 230)
 cap = cv2.VideoCapture("test.mp4")
 cap.set(cv2.CAP_PROP_FPS, 60) 
 def show_frame():
+    global out
     ret, frame = cap.read()
     if ret == True:
         # if ret == True:
@@ -216,14 +222,16 @@ def show_frame():
         if d == 0:
             detectFace(faceCascade,eyeCascade,frame,f)
         # nose detect
-        if d == 1:
+        elif d == 1:
             detectNose(faceCascade,noseCascade,frame,f)
         # mouth detect
-        if d == 2:
+        elif d == 2:
             detectMouth(mouthCascade,frame,f)
         frame = cv2.cvtColor(frame,cv2.COLOR_BGRA2BGR)
         if count % 2 == 0 and count != 0:
             out.write(frame)
+        elif count > 2 and count % 2 != 0:
+            out = cv2.VideoWriter('outpy'+str(time)+str(count)+'.avi',cv2.VideoWriter_fourcc('M','J','P','G'), 10, (frame_width,frame_height))
         cv2image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGBA)
         img = Image.fromarray(cv2image)
         image = ImageTk.PhotoImage(image=img)
