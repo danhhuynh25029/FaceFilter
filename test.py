@@ -21,20 +21,22 @@ frame_height = 400
 # Define the codec and create VideoWriter object.The output is stored in 'outpy.avi' file.
 time = datetime.datetime.now()
 count = 1
-out = cv2.VideoWriter('outpy'+str(time)+str(count)+'.avi',cv2.VideoWriter_fourcc('M','J','P','G'), 10, (frame_width,frame_height))
-
+out = cv2.VideoWriter()
 #Set up GUI
 d,f = 1000,1000
 tmp = False
+Record = False
 def Snapshot(event):
     global tmp
     tmp = True
 def shiftImage(event):
-    global count 
+    global count ,Record
     count += 1
     if count % 2 == 0 and count != 0:
+        Record = True
         canvas1.itemconfig(button, image=srecord_image)
     else:
+        Record = False
         canvas1.itemconfig(button, image=record_image)
 window = tk.Tk()  #Makes main window
 window.wm_title("Tiktok fake")
@@ -224,12 +226,13 @@ b11.place(x=20+ 160,y =25+ 230)
 cap = cv2.VideoCapture("test.mp4")
 cap.set(cv2.CAP_PROP_FPS, 60) 
 def show_frame():
-    global out,tmp
+    global out,tmp,Record
     ret, frame = cap.read()
     if ret == True:
         # if ret == True:
         # print(count)
         # print(tmp)
+        # print(Record)
         frame = cv2.resize(frame,(230,400))
         frame = cv2.cvtColor(frame,cv2.COLOR_BGR2BGRA)
         # face and eye  detect
@@ -245,10 +248,13 @@ def show_frame():
         if tmp == True:
             cv2.imwrite(nameImage,frame)
             tmp = False
+        if Record == True:
+            out = cv2.VideoWriter('outpy'+str(time)+str(count)+'.avi',cv2.VideoWriter_fourcc('M','J','P','G'), 10, (frame_width,frame_height))
+            Record = False
         if count % 2 == 0 and count != 0:
             out.write(frame)
-        elif count > 2 and count % 2 != 0:
-            out = cv2.VideoWriter('outpy'+str(time)+str(count)+'.avi',cv2.VideoWriter_fourcc('M','J','P','G'), 10, (frame_width,frame_height))
+        # elif count > 2 and count % 2 != 0:
+        #     out = cv2.VideoWriter('outpy'+str(time)+str(count)+'.avi',cv2.VideoWriter_fourcc('M','J','P','G'), 10, (frame_width,frame_height))
         cv2image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGBA)
         img = Image.fromarray(cv2image)
         image = ImageTk.PhotoImage(image=img)
