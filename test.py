@@ -22,26 +22,20 @@ frame_height = 400
 time = datetime.datetime.now()
 count = 1
 out = cv2.VideoWriter('outpy'+str(time)+str(count)+'.avi',cv2.VideoWriter_fourcc('M','J','P','G'), 10, (frame_width,frame_height))
+
 #Set up GUI
 d,f = 1000,1000
-tmp = 0
-
+tmp = False
+def Snapshot(event):
+    global tmp
+    tmp = True
 def shiftImage(event):
     global count 
     count += 1
     if count % 2 == 0 and count != 0:
         canvas1.itemconfig(button, image=srecord_image)
-
     else:
         canvas1.itemconfig(button, image=record_image)
-def Record():
-    global tmp
-    record.image = srecord_image
-    tmp = 1
-def stopRecord():
-    global tmp 
-    record.image = record_image
-    tmp = 0
 window = tk.Tk()  #Makes main window
 window.wm_title("Tiktok fake")
 window.config(background="#2d3436")
@@ -50,6 +44,8 @@ window.geometry("600x550")
 label1 = tk.Label(window,borderwidth=0)
 # recored video
 # out = cv2.VideoWriter('outpy'+str(time)+str(count)+'.avi',cv2.VideoWriter_fourcc('M','J','P','G'), 10, (frame_width,frame_height))
+# camera 
+nameImage = str(time)+".jpg"
 #filter
 def filterHeart():
     global d,f
@@ -87,8 +83,14 @@ def filterBeard():
 def filterMouthColor():
     global d,f
     d,f = 2,0
+# option
+# def Cam():
+#     global tmp
+#     tmp = False
+# def Video():
+#     global tmp
+#     tmp = True
 # button record
-
 recordImage = cv2.imread("images/record.png",-1)
 recordImage = cv2.resize(recordImage,(50,50))
 cv2Record = cv2.cvtColor(recordImage, cv2.COLOR_BGR2RGBA)
@@ -99,7 +101,13 @@ srecordImage = cv2.resize(srecordImage,(50,50))
 scv2Record = cv2.cvtColor(srecordImage, cv2.COLOR_BGR2RGBA)
 srecordImage = Image.fromarray(scv2Record)
 srecord_image = ImageTk.PhotoImage(image=srecordImage)
-#test
+# snapshot
+camera = cv2.imread("images/Camera_Icon.jpg",-1)
+cameraImage =cv2.resize(camera,(50,50))
+cv2Camera = cv2.cvtColor(cameraImage,cv2.COLOR_BGR2BGRA)
+cameraImage = Image.fromarray(cv2Camera)
+camera = ImageTk.PhotoImage(image=cameraImage)
+#record button
 blank =  cv2.imread("images/blankButton.png",-1)
 blank = cv2.resize(blank,(50,50))
 cv2blank = cv2.cvtColor(blank,cv2.COLOR_BGR2RGBA)
@@ -109,9 +117,14 @@ canvas1 = tk.Canvas(window, width=50, height=50)
 button = canvas1.create_image(0, 0, anchor=tk.NW, image=record_image)
 blank = canvas1.create_image(0, 0, anchor=tk.NW, image=blankImage, state=tk.NORMAL)
 canvas1.tag_bind(blank, "<Button-1>", shiftImage)
-canvas1.place(x=390,y=460)
+canvas1.place(x=480,y=460)
 #0----
-
+# snapshot button
+canvas2 = tk.Canvas(window, width=50, height=50)
+button = canvas2.create_image(0, 0, anchor=tk.NW, image=camera)
+blank = canvas2.create_image(0, 0, anchor=tk.NW, image=blankImage, state=tk.NORMAL)
+canvas2.tag_bind(blank, "<Button-1>", Snapshot)
+canvas2.place(x=300,y=460)
 # heart filter
 img = cv2.imread("images/heart.png",-1)
 img = cv2.resize(img,(50,20))
@@ -211,11 +224,12 @@ b11.place(x=20+ 160,y =25+ 230)
 cap = cv2.VideoCapture("test.mp4")
 cap.set(cv2.CAP_PROP_FPS, 60) 
 def show_frame():
-    global out
+    global out,tmp
     ret, frame = cap.read()
     if ret == True:
         # if ret == True:
-        print(count)
+        # print(count)
+        # print(tmp)
         frame = cv2.resize(frame,(230,400))
         frame = cv2.cvtColor(frame,cv2.COLOR_BGR2BGRA)
         # face and eye  detect
@@ -228,6 +242,9 @@ def show_frame():
         elif d == 2:
             detectMouth(mouthCascade,frame,f)
         frame = cv2.cvtColor(frame,cv2.COLOR_BGRA2BGR)
+        if tmp == True:
+            cv2.imwrite(nameImage,frame)
+            tmp = False
         if count % 2 == 0 and count != 0:
             out.write(frame)
         elif count > 2 and count % 2 != 0:
