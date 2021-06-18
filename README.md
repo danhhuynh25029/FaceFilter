@@ -9,3 +9,4 @@ change path video (line 226 test.py)
 <pre>cap = cv2.VideoCapture(path)</pre>
 # Unfinished
 Compare Haar Cascade and Local Binary Pattern
+Why choose Haar Cascade
