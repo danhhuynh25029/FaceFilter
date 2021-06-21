@@ -6,11 +6,11 @@ How to install:
 
 How to use:
 
-Change path video (line 226 test.py)
-<pre>cap = cv2.VideoCapture(path)</pre>
+* Change path video (line 226 test.py)
+  <pre>cap = cv2.VideoCapture(path)</pre>
 
-Run file test.py
-<pre>python test.py</pre>
+* Run file test.py
+  <pre>python test.py</pre>
 # Unfinished
 Compare Haar Cascade and Local Binary Pattern
 
