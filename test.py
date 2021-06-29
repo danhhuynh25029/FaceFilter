@@ -6,6 +6,7 @@ from main import *
 from tkinter import ttk
 from tkinter_custom_button import TkinterCustomButton as ButtonC
 import datetime
+import os
 #load xml
 # face detect
 faceCascade = cv2.CascadeClassifier("xml/haarcascade_frontalface_default.xml")
@@ -246,10 +247,10 @@ def show_frame():
             detectMouth(mouthCascade,frame,f)
         frame = cv2.cvtColor(frame,cv2.COLOR_BGRA2BGR)
         if tmp == True:
-            cv2.imwrite(nameImage,frame)
+            cv2.imwrite(os.path.join(os.getcwd(),nameImage),frame)
             tmp = False
         if Record == True:
-            out = cv2.VideoWriter('outpy'+str(time)+str(count)+'.avi',cv2.VideoWriter_fourcc('M','J','P','G'), 10, (frame_width,frame_height))
+            out = cv2.VideoWriter(os.path.join(os.getcwd(),'outpy'+str(time)+str(count)+'.avi'),cv2.VideoWriter_fourcc('M','J','P','G'), 10, (frame_width,frame_height))
             Record = False
         if count % 2 == 0 and count != 0:
             out.write(frame)
