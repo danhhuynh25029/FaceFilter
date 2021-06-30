@@ -247,10 +247,13 @@ def show_frame():
             detectMouth(mouthCascade,frame,f)
         frame = cv2.cvtColor(frame,cv2.COLOR_BGRA2BGR)
         if tmp == True:
-            cv2.imwrite(os.path.join(os.getcwd(),nameImage),frame)
+            #print(os.path.dirname(__file__))
+            #print(os.path.dirname(os.path.abspath(__file__))+os.sep+nameImage) 
+            #cv2.imwrite(os.path.dirname(os.path.abspath(__file__))+os.sep+nameImage,frame)
+            cv2.imwrite(os.path.pardir+os.sep+"CS231"+os.sep+nameImage,frame)
             tmp = False
         if Record == True:
-            out = cv2.VideoWriter(os.path.join(os.getcwd(),'outpy'+str(time)+str(count)+'.avi'),cv2.VideoWriter_fourcc('M','J','P','G'), 10, (frame_width,frame_height))
+            out = cv2.VideoWriter(os.path.pardir+os.sep+"CS231"+os.sep+'outpy'+str(time)+str(count)+'.avi',cv2.VideoWriter_fourcc('M','J','P','G'), 10, (frame_width,frame_height))
             Record = False
         if count % 2 == 0 and count != 0:
             out.write(frame)
