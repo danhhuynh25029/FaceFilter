@@ -18,9 +18,11 @@ noseCascade = cv2.CascadeClassifier("xml/haarcascade_mcs_nose.xml")
 mouthCascade = cv2.CascadeClassifier("xml/haarcascade_mcs_mouth.xml")
 frame_width = 230
 frame_height = 400
-
+# choose video or image
+video = True
+camera = False
 # Define the codec and create VideoWriter object.The output is stored in 'outpy.avi' file.
-time = datetime.datetime.now()
+#time = datetime.datetime.now()
 count = 1
 out = cv2.VideoWriter()
 #Set up GUI
@@ -48,7 +50,8 @@ label1 = tk.Label(window,borderwidth=0)
 # recored video
 # out = cv2.VideoWriter('outpy'+str(time)+str(count)+'.avi',cv2.VideoWriter_fourcc('M','J','P','G'), 10, (frame_width,frame_height))
 # camera 
-nameImage = str(time)+".jpg"
+#nameImage = str(time)+".jpg"
+#nameVideo = str(time)+".avi"
 #filter
 def filterHeart():
     global d,f
@@ -86,6 +89,17 @@ def filterBeard():
 def filterMouthColor():
     global d,f
     d,f = 2,0
+def clearFilter():
+    global d,f
+    d,f = -1,-1
+def setImage():
+    global image,video
+    image = True
+    video = False
+def setVideo():
+    global image,video
+    image = True
+    video = False
 # option
 # def Cam():
 #     global tmp
@@ -104,30 +118,41 @@ srecordImage = cv2.resize(srecordImage,(50,50))
 scv2Record = cv2.cvtColor(srecordImage, cv2.COLOR_BGR2RGBA)
 srecordImage = Image.fromarray(scv2Record)
 srecord_image = ImageTk.PhotoImage(image=srecordImage)
-# snapshot
-camera = cv2.imread("images/Camera_Icon.jpg",-1)
-cameraImage =cv2.resize(camera,(50,50))
-cv2Camera = cv2.cvtColor(cameraImage,cv2.COLOR_BGR2BGRA)
-cameraImage = Image.fromarray(cv2Camera)
-camera = ImageTk.PhotoImage(image=cameraImage)
-#record button
-blank =  cv2.imread("images/blankButton.png",-1)
-blank = cv2.resize(blank,(50,50))
-cv2blank = cv2.cvtColor(blank,cv2.COLOR_BGR2RGBA)
-blank_img = Image.fromarray(cv2blank)
-blankImage = ImageTk.PhotoImage(image=blank_img)
-canvas1 = tk.Canvas(window, width=50, height=50)
-button = canvas1.create_image(0, 0, anchor=tk.NW, image=record_image)
-blank = canvas1.create_image(0, 0, anchor=tk.NW, image=blankImage, state=tk.NORMAL)
-canvas1.tag_bind(blank, "<Button-1>", shiftImage)
-canvas1.place(x=480,y=460)
-#0----
-# snapshot button
-canvas2 = tk.Canvas(window, width=50, height=50)
-button = canvas2.create_image(0, 0, anchor=tk.NW, image=camera)
-blank = canvas2.create_image(0, 0, anchor=tk.NW, image=blankImage, state=tk.NORMAL)
-canvas2.tag_bind(blank, "<Button-1>", Snapshot)
-canvas2.place(x=300,y=460)
+    # Video is ready
+if video == True:
+    # snapshot
+    camera = cv2.imread("images/Camera_Icon.jpg",-1)
+    cameraImage =cv2.resize(camera,(50,50))
+    cv2Camera = cv2.cvtColor(cameraImage,cv2.COLOR_BGR2BGRA)
+    cameraImage = Image.fromarray(cv2Camera)
+    camera = ImageTk.PhotoImage(image=cameraImage)
+    #record button
+    blank =  cv2.imread("images/blankButton.png",-1)
+    blank = cv2.resize(blank,(50,50))
+    cv2blank = cv2.cvtColor(blank,cv2.COLOR_BGR2RGBA)
+    blank_img = Image.fromarray(cv2blank)
+    blankImage = ImageTk.PhotoImage(image=blank_img)
+    canvas1 = tk.Canvas(window, width=50, height=50)
+    button = canvas1.create_image(0, 0, anchor=tk.NW, image=record_image)
+    blank = canvas1.create_image(0, 0, anchor=tk.NW, image=blankImage, state=tk.NORMAL)
+    canvas1.tag_bind(blank, "<Button-1>", shiftImage)
+    canvas1.place(x=480,y=460)
+    #0----
+    # snapshot button
+    canvas2 = tk.Canvas(window, width=50, height=50)
+    button = canvas2.create_image(0, 0, anchor=tk.NW, image=camera)
+    blank = canvas2.create_image(0, 0, anchor=tk.NW, image=blankImage, state=tk.NORMAL)
+    canvas2.tag_bind(blank, "<Button-1>", Snapshot)
+    canvas2.place(x=300,y=460)
+if camera == True:
+    pass
+print(video)
+# button Image
+#buttonImage = ButtonC(text="image",command=setImage,height=30,width=50,borderwidth=0)
+#buttonImage.place(x=40,y=5)
+#button video
+#buttonVideo = ButtonC(text="video",command=setVideo,height=30,width=50,borderwidth=0)
+#buttonVideo.place(x=20+90,y=5)
 # heart filter
 img = cv2.imread("images/heart.png",-1)
 img = cv2.resize(img,(50,20))
@@ -155,8 +180,8 @@ b2.place(x=20+ 160,y =25+ 20)
 # mask bread
 img3 = cv2.imread("images/bread.png",-1)
 img3 = cv2.resize(img3,(50,30))
-cv2image3 = cv2.cvtColor(img3, cv2.COLOR_BGR2RGBA)
-img3 = Image.fromarray(cv2image3)
+image3 = cv2.cvtColor(img3, cv2.COLOR_BGR2RGBA)
+img3 = Image.fromarray(image3)
 image3 = ImageTk.PhotoImage(image=img3)
 b3 = ButtonC(image=image3,command=filterBread,height=50,width=50,borderwidth=0)
 b3.place(x=20+ 20,y =25+ 90)
@@ -224,11 +249,27 @@ img11 = Image.fromarray(cv2image11)
 image11 = ImageTk.PhotoImage(image=img11)
 b11 = ButtonC(image=image11,command=filterMouthColor,height=50,width=50,borderwidth=0)
 b11.place(x=20+ 160,y =25+ 230)
+# clear filter
+img12 = cv2.imread("images/white.png",-1)
+img12 = cv2.resize(img12,(50,50))
+cv2image12 = cv2.cvtColor(img12, cv2.COLOR_BGR2RGBA)
+img12 = Image.fromarray(cv2image12)
+image12 = ImageTk.PhotoImage(image=img12)
+b12 = ButtonC(text="clear",command=clearFilter,height=50,width=50,borderwidth=0)
+b12.place(x=20+20,y =25+ 300)
+# read video
 cap = cv2.VideoCapture("test.mp4")
 cap.set(cv2.CAP_PROP_FPS, 60) 
 def show_frame():
-    global out,tmp,Record
+    global out,tmp,Record,time,video
     ret, frame = cap.read()
+    time = datetime.datetime.now()
+    if video == False:
+        return 0
+    # Name : d-m-y-h-f
+    nameImage = time.strftime("%d")+"-"+time.strftime("%m")+"-"+time.strftime("%Y")+"-"+time.strftime("%H")+"-"+time.strftime("%f")+".jpg"
+    nameVideo = time.strftime("%d")+"-"+time.strftime("%m")+"-"+time.strftime("%Y")+"-"+time.strftime("%H")+"-"+time.strftime("%f")+".avi"
+    #print(nameImage)
     if ret == True:
         # if ret == True:
         # print(count)
@@ -250,10 +291,10 @@ def show_frame():
             #print(os.path.dirname(__file__))
             #print(os.path.dirname(os.path.abspath(__file__))+os.sep+nameImage) 
             #cv2.imwrite(os.path.dirname(os.path.abspath(__file__))+os.sep+nameImage,frame)
-            cv2.imwrite(os.path.pardir+os.sep+"CS231"+os.sep+nameImage,frame)
+            cv2.imwrite(nameImage,frame)
             tmp = False
         if Record == True:
-            out = cv2.VideoWriter(os.path.pardir+os.sep+"CS231"+os.sep+'outpy'+str(time)+str(count)+'.avi',cv2.VideoWriter_fourcc('M','J','P','G'), 10, (frame_width,frame_height))
+            out = cv2.VideoWriter(nameVideo,cv2.VideoWriter_fourcc('M','J','P','G'), 10, (frame_width,frame_height))
             Record = False
         if count % 2 == 0 and count != 0:
             out.write(frame)
@@ -267,5 +308,7 @@ def show_frame():
         label1.configure(image=image)
         label1.place(x=300, y=20+20)
         label1.after(100,show_frame)
-show_frame()  #Display 2
+
+if video == True:
+    show_frame()  #Display 2
 window.mainloop()  #Starts GUI
